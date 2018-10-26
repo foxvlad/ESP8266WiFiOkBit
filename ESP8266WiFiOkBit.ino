@@ -13,8 +13,8 @@ const char* password = "wertualfox";
 
 WiFiUDP Udp;
 unsigned int localUdpPort = 6400;  // локальный порт для прослушки
-char incomingPacket[255];          // буфер для входящих пакетов
-char  replyPacekt[255];  // ответ
+char incomingPacket[100];          // буфер для входящих пакетов
+char  replyPacekt[100];  // ответ
 
 
 
@@ -255,7 +255,7 @@ void OKBIT_UDP::build(int b_sub_id, int b_id, int b_device, int b_cmd, int b_sub
   b_pack = b_pack +  buf_pack;
 
 
-  b_pack.toCharArray(replyPacekt, b_pack.length()+4);
+  b_pack.toCharArray(replyPacekt, b_pack.length()+2);
 
   Serial.println("");
   Serial.print("HEX - ");
@@ -324,6 +324,8 @@ void loop()
       if (vol[1] == 1) lamp = lamp1;
       if (vol[1] == 2) lamp = lamp2;
       digitalWrite(lamp, vol[2]);
+      String backup = "000B";
+      backup.toCharArray(replyPacekt, backup.length()+2);
     }
 
 
@@ -333,7 +335,7 @@ void loop()
       mid_b[0] = mid >> 16;
       mid_b[1] = mid & 0xFFFF;
 
-      DownPacket.build(sub_id, id, device, 13, sub_id, id, 5, 7, mid_b[0], mid_b[1]);//передача верчие прошивки и серийного номера
+      DownPacket.build(sub_id, id, device, 13, sub_id, id, 1, 1, mid_b[0], mid_b[1]);//передача верчие прошивки и серийного номера
     }
 
     // отправляем ответ на IP-адрес и порт, с которых пришел пакет:
