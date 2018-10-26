@@ -34,7 +34,7 @@ const int lamp2 = D7;
 class OKBIT_UDP {
   public:
     void parsing(char inPacket[255], int len); //Парсинг полученного пакета
-    void build(int b_sub_id = 0, int b_id = 0, int b_device = 0, int b_cmd = 0 , int b_subto_id = 0, int b_to_id = 0, int b_vol1 = 0, int b_vol2 = 0, int b_vol3 = 0, int b_vol4 = 0, int b_vol5 = 0); //Сборка пакета на отправку
+    void build(int b_sub_id = 0, int b_id = 0, int b_device = 0, int b_cmd = 0 , int b_subto_id = 0, int b_to_id = 0, unsigned int b_vol1 = 0, unsigned int b_vol2 = 0, unsigned int b_vol3 = 0, unsigned int b_vol4 = 0); //Сборка пакета на отправку
     int in_cmd;
     int status_err;
   private:
@@ -143,7 +143,7 @@ void OKBIT_UDP::parsing(char inPacket[255], int len) {
 }
 
 
-void OKBIT_UDP::build(int b_sub_id, int b_id, int b_device, int b_cmd, int b_subto_id, int b_to_id, int b_vol1, int b_vol2, int b_vol3, int b_vol4, int b_vol5) {
+void OKBIT_UDP::build(int b_sub_id, int b_id, int b_device, int b_cmd, int b_subto_id, int b_to_id, unsigned int b_vol1, unsigned int b_vol2, unsigned int b_vol3, unsigned int b_vol4) {
   String b_pack;
   char myStr[3];
   int b_len_pack;
@@ -236,6 +236,8 @@ void OKBIT_UDP::build(int b_sub_id, int b_id, int b_device, int b_cmd, int b_sub
     b_pack = b_pack +  buf_pack;
   }
 
+
+
   int packet_to_dec[30];
   char b_myStr[100];
   char bufChar[2];
@@ -321,11 +323,17 @@ void loop()
     OKBIT_UDP DownPacket;
     DownPacket.parsing(incomingPacket, len);
         
-    unsigned int mid = ESP.getFlashChipId ();
 
-     Serial.printf("FlashChipId: %s \n", mid);
+    Serial.printf ("ESP8266 Chip id =% 08X \n",ESP.getFlashChipId());
     
-    DownPacket.build(sub_id, id, device, 13, sub_id, id, 0, 5, 1809, 6);
+    //unsigned long mid = ESP.getFlashChipId();
+    unsigned long mid = 0xAA1640E0;
+
+    unsigned int mid_b[2];
+    mid_b[0] = mid >> 16;  
+    mid_b[1] = mid & 0xFFFF;
+    
+    DownPacket.build(sub_id, id, device, 13, sub_id, id, 0, 1, mid_b[0], mid_b[1]);//передача верчие прошивки и серийного номера
 
     
 
