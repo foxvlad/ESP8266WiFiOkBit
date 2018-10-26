@@ -14,7 +14,7 @@ const char* password = "wertualfox";
 WiFiUDP Udp;
 unsigned int localUdpPort = 6400;  // локальный порт для прослушки
 char incomingPacket[255];          // буфер для входящих пакетов
-char  replyPacekt[] = "4F4B4249542D554450AAAA1100001B59000D000000000005071100060498";  // ответ
+char  replyPacekt[255];  // ответ
 
 
 
@@ -134,7 +134,7 @@ void OKBIT_UDP::parsing(char inPacket[255], int len) {
         Serial.print("vol[5] - ");
         Serial.println(vol[5]);
       }
-      
+
     }
   }
 
@@ -182,19 +182,11 @@ void OKBIT_UDP::build(int b_sub_id, int b_id, int b_device, int b_cmd, int b_sub
   buf_pack = myStr;
   b_pack = b_pack +  buf_pack;
 
-  sprintf(myStr, "%02X", b_subto_id >> 8);
+  sprintf(myStr, "%02X", b_subto_id);
   buf_pack = myStr;
   b_pack = b_pack +  buf_pack;
 
-  sprintf(myStr, "%02X", b_subto_id & 0xFF);
-  buf_pack = myStr;
-  b_pack = b_pack +  buf_pack;
-
-  sprintf(myStr, "%02X", b_to_id >> 8);
-  buf_pack = myStr;
-  b_pack = b_pack +  buf_pack;
-
-  sprintf(myStr, "%02X", b_to_id & 0xFF);
+  sprintf(myStr, "%02X", b_to_id);
   buf_pack = myStr;
   b_pack = b_pack +  buf_pack;
 
@@ -241,11 +233,11 @@ void OKBIT_UDP::build(int b_sub_id, int b_id, int b_device, int b_cmd, int b_sub
   int packet_to_dec[30];
   char b_myStr[100];
   char bufChar[2];
-  int len = b_pack.length()+3;
-  
+  int len = b_pack.length() + 3;
+
   b_pack.toCharArray( b_myStr, len);
 
-  
+
 
   unsigned int crc = 0;
   for (int i = 0; i < len; i = i + 2) { //разбивка пакета на байты
@@ -262,9 +254,12 @@ void OKBIT_UDP::build(int b_sub_id, int b_id, int b_device, int b_cmd, int b_sub
   buf_pack = myStr;
   b_pack = b_pack +  buf_pack;
 
+
+  b_pack.toCharArray(replyPacekt, b_pack.length()+4);
+
   Serial.println("");
   Serial.print("HEX - ");
-  Serial.println(b_pack);
+  Serial.println(replyPacekt);
 
 
 }
@@ -322,27 +317,23 @@ void loop()
 
     OKBIT_UDP DownPacket;
     DownPacket.parsing(incomingPacket, len);
-        
-
-    Serial.printf ("ESP8266 Chip id =% 08X \n",ESP.getFlashChipId());
-    
-    //unsigned long mid = ESP.getFlashChipId();
-    unsigned long mid = 0xAA1640E0;
-
-    unsigned int mid_b[2];
-    mid_b[0] = mid >> 16;  
-    mid_b[1] = mid & 0xFFFF;
-    
-    DownPacket.build(sub_id, id, device, 13, sub_id, id, 0, 1, mid_b[0], mid_b[1]);//передача верчие прошивки и серийного номера
-
-    
 
     int lamp;
 
-    if ( DownPacket.status_err == 1) {
+    if ( DownPacket.status_err == 1 && DownPacket.in_cmd == 30 ) {
       if (vol[1] == 1) lamp = lamp1;
       if (vol[1] == 2) lamp = lamp2;
       digitalWrite(lamp, vol[2]);
+    }
+
+
+    if ( DownPacket.status_err == 1 && DownPacket.in_cmd == 255) {
+      unsigned long mid = ESP.getFlashChipId();
+      unsigned int mid_b[2];
+      mid_b[0] = mid >> 16;
+      mid_b[1] = mid & 0xFFFF;
+
+      DownPacket.build(sub_id, id, device, 13, sub_id, id, 5, 7, mid_b[0], mid_b[1]);//передача верчие прошивки и серийного номера
     }
 
     // отправляем ответ на IP-адрес и порт, с которых пришел пакет:
