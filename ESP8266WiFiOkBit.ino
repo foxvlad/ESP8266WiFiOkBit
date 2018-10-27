@@ -21,8 +21,8 @@ char  replyPacekt[100];  // ответ
 int sub_id = 0; //адресс подсети
 int id = 0; //адрес устройства
 int device = 7001; //тип устройства
-int firmware1 = 0;
-int firmware2 = 1;
+int firmware[] = 0,9;
+
 
 
 int vol[10]; // массив регистров управления и чтения данных
@@ -335,7 +335,7 @@ void loop()
       mid_b[0] = mid >> 16;
       mid_b[1] = mid & 0xFFFF;
 
-      DownPacket.build(sub_id, id, device, 13, sub_id, id, 1, 1, mid_b[0], mid_b[1]);//передача верчие прошивки и серийного номера
+      DownPacket.build(sub_id, id, device, 13, sub_id, id, firmware[0], firmware[1], mid_b[0], mid_b[1]);//передача верчие прошивки и серийного номера
     }
 
     // отправляем ответ на IP-адрес и порт, с которых пришел пакет:
