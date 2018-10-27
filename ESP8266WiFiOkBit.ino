@@ -14,14 +14,14 @@ const char* password = "wertualfox";
 WiFiUDP Udp;
 unsigned int localUdpPort = 6400;  // локальный порт для прослушки
 char incomingPacket[100];          // буфер для входящих пакетов
-char  replyPacekt[100];  // ответ
+char replyPacekt[100];  // буфер для исходящих пакетов
 
 
 
 int sub_id = 0; //адресс подсети
 int id = 0; //адрес устройства
 int device = 7001; //тип устройства
-int firmware[] = {0,9};
+int firmware[] = {0,9};//версия прошивки
 
 
 
