@@ -67,40 +67,40 @@ void OKBIT_UDP::parsing(char inPacket[255], int len) {
 
       if (long_pack == 11 || long_pack == 13 || long_pack == 15 || long_pack == 17 || long_pack == 19 ) {
         _vol[1] = (packet_to_dec[20] << 8) | packet_to_dec[21] ; //значение 1
-        Serial.print("_vol[1] - ");
+        Serial.print("vol[1] - ");
         Serial.println(_vol[1]);
       }
       if (long_pack == 13 || long_pack == 15 || long_pack == 17 || long_pack == 19 ) {
         _vol[2] = (packet_to_dec[22] << 8) | packet_to_dec[23] ; //значение 2
-        Serial.print("_vol[2] - ");
+        Serial.print("vol[2] - ");
         Serial.println(_vol[2]);
       }
       if (long_pack == 15 || long_pack == 17 || long_pack == 19 ) {
         _vol[3] = (packet_to_dec[24] << 8) | packet_to_dec[25] ; //значение 2
-        Serial.print("_vol[3] - ");
+        Serial.print("vol[3] - ");
         Serial.println(_vol[3]);
       }
 
       if (long_pack == 17 || long_pack == 19 ) {
         _vol[4] = (packet_to_dec[26] << 8) | packet_to_dec[27] ; //значение 2
-        Serial.print("_vol[4] - ");
+        Serial.print("vol[4] - ");
         Serial.println(_vol[4]);
       }
       if (long_pack == 19 ) {
         _vol[5] = (packet_to_dec[28] << 8) | packet_to_dec[29] ; //значение 2
-        Serial.print("_vol[5] - ");
+        Serial.print("vol[5] - ");
         Serial.println(_vol[5]);
       }
 
     }
   }
 
-  if (this->status_err == 1){
-  
-   if (this->in_cmd == 30) {
+  if (this->status_err == 1) {
+
+    if (this->in_cmd == 30) {
 
       holdingRegs[_vol[1]] = _vol[2];
-      _holdingRegs[_vol[1]] = _vol[2];  
+      _holdingRegs[_vol[1]] = _vol[2];
       String backup = "000B";
       backup.toCharArray(replyPacekt, backup.length() + 2);
     }
@@ -239,7 +239,7 @@ void OKBIT_UDP::build(int b_sub_id, int b_id, int b_device, int b_cmd, int b_sub
   b_pack = b_pack +  buf_pack;
 
 
-  b_pack.toCharArray(replyPacekt, b_pack.length()+2);
+  b_pack.toCharArray(replyPacekt, b_pack.length() + 2);
 
   Serial.println("");
   Serial.print("HEX - ");
@@ -247,10 +247,10 @@ void OKBIT_UDP::build(int b_sub_id, int b_id, int b_device, int b_cmd, int b_sub
 }
 
 
-void OKBIT_UDP::eeprom_read(){
+void OKBIT_UDP::eeprom_read() {
   byte mdip[3];
-  for(int i=0; i<4; i++){
-  MD[i] = EEPROM.read(i);
+  for (int i = 0; i < 4; i++) {
+    MD[i] = EEPROM.read(i);
   }
   //IPAddress MD(mdip[0], mdip[1], mdip[2], mdip[3]);
   Serial.print("MD read - ");
@@ -258,19 +258,18 @@ void OKBIT_UDP::eeprom_read(){
   Serial.println("");
 }
 
-void OKBIT_UDP::eeprom_write(){
-  MD =  Udp.remoteIP(); 
-  EEPROM.write(0, MD[0]);
-  EEPROM.write(1, MD[1]);
-  EEPROM.write(2, MD[2]);
-  EEPROM.write(3, MD[3]);
-  delay(100);  
+void OKBIT_UDP::eeprom_write() {
+  MD =  Udp.remoteIP();
+  for (int i = 0; i < 4; i++) {
+    EEPROM.write(i, MD[i]);
+  }
+  delay(100);
   EEPROM.commit();
-  
+
   Serial.print("MD write - ");
   Serial.print(MD);
   Serial.println("");
-  
+
   this->eeprom_read();
 }
 
@@ -282,13 +281,13 @@ void OKBIT_UDP::send_event() { //отсылка информации на шлю
 }
 
 
-void OKBIT_UDP::holding_update(){  
-  for (int i=0; i<10; i++){
-    if (_holdingRegs[i] != holdingRegs[i]){//если старое значение не равно новому
+void OKBIT_UDP::holding_update() {
+  for (int i = 0; i < 10; i++) {
+    if (_holdingRegs[i] != holdingRegs[i]) { //если старое значение не равно новому
       _holdingRegs[i] = holdingRegs[i];//присвоить старому значению новое
       this->build(sub_id, id, device, 30, sub_id, id, i, holdingRegs[i]);//передача верcие прошивки и серийного номера на сборку пакета
       this->send_event();
     }
   }
-   
+
 }
