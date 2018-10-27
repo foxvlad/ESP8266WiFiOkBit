@@ -116,7 +116,7 @@ void OKBIT_UDP::parsing(char inPacket[255], int len) {
     }
 
     if (this->in_cmd == 64) {
-      this->eeprom_read();
+      this->eeprom_write();
       String backup = "000B";
       backup.toCharArray(replyPacekt, backup.length() + 2);
     }
@@ -250,8 +250,10 @@ void OKBIT_UDP::build(int b_sub_id, int b_id, int b_device, int b_cmd, int b_sub
 void OKBIT_UDP::eeprom_read(){
   byte mdip[3];
   for(int i=0; i<4; i++){
-  mdip[i] = EEPROM.read(i);
+  MD[i] = EEPROM.read(i);
   }
+  //IPAddress MD(mdip[0], mdip[1], mdip[2], mdip[3]);
+  Serial.print("MD read - ");
   Serial.print(MD);
   Serial.println("");
 }
@@ -264,12 +266,16 @@ void OKBIT_UDP::eeprom_write(){
   EEPROM.write(3, MD[3]);
   delay(100);  
   EEPROM.commit();
+  
+  Serial.print("MD write - ");
+  Serial.print(MD);
+  Serial.println("");
+  
   this->eeprom_read();
 }
 
 
 void OKBIT_UDP::send_event() { //отсылка информации на шлюз
-  //this->eeprom_read();
   Udp.beginPacket(MD, 6500);
   Udp.write(replyPacekt);
   Udp.endPacket();

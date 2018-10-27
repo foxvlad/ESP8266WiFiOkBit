@@ -13,7 +13,7 @@ const char* password = "wertualfox";
 WiFiUDP Udp;
 
 
-IPAddress MD(192, 168, 1, 35); //ip адрес MajorDoMo
+IPAddress MD(192, 168, 1, 100); //ip адрес MajorDoMo
 unsigned int MD_Port = 6500;   //Порт MajorDoMo
 
 unsigned int localUdpPort = 6400;  // локальный порт для прослушки
@@ -84,6 +84,7 @@ void setup() {
   //  "Теперь прослушиваем IP-адрес %s, UDP-порт %d"
 
   EEPROM.begin(512);
+  HandlerUDP.eeprom_read();
 }
 
 void loop()
@@ -106,7 +107,7 @@ void loop()
 
     // отправляем ответ на IP-адрес и порт, с которых пришел пакет:
     if (HandlerUDP.status_err == 1) {
-      Udp.beginPacket(MD, Udp.remotePort());
+      Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
       Udp.write(replyPacekt);
       Udp.endPacket();
     }
