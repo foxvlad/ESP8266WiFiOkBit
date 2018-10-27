@@ -21,7 +21,7 @@ char  replyPacekt[100];  // ответ
 int sub_id = 0; //адресс подсети
 int id = 0; //адрес устройства
 int device = 7001; //тип устройства
-int firmware[] = 0,9;
+int firmware[] = {0,9};
 
 
 
