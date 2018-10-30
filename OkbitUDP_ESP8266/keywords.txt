@@ -1,0 +1,31 @@
+#######################################
+# Syntax Coloring Map For OkbitUDP_ESP8266
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+OKBIT_UDP				KEYWORD1
+	
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+OkbitUDP_ESP8266	KEYWORD2
+HandlerUDP          KEYWORD2
+parsing				KEYWORD2
+build				KEYWORD2
+eeprom_read			KEYWORD2
+eeprom_write		KEYWORD2
+holding_update		KEYWORD2
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+holdingRegs			LITERAL1
+replyGate			LITERAL1
+status_err			LITERAL1
+gateIP				LITERAL1
