@@ -114,7 +114,7 @@ void OKBIT_UDP::parsing(char inPacket[255], int len, uint32_t gateIP) {
 
 
     if (this->in_cmd == 255 || this->in_cmd == 20) {
-      unsigned long mid = ESP.getFlashChipId();
+      unsigned long mid = ESP.getChipId();
       unsigned int mid_b[2];
       mid_b[0] = mid >> 16;
       mid_b[1] = mid & 0xFFFF;
